@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %} Crea Usuario {% endblock %} 
+
+{% block content %} 
+    <div>
+        <h1>Listado de usuarios</h1>
+    </div>
+    <br>
+    <div>
+        <div>
+            <a class="btn btn-success " href="{% url 'crear_usuario' %}">Nuevo Usuario</a>
+        </div>
+    </div>
+    <br>
+    <div class="card p-2 "> 
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                    <th>Conexion</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    
+                        <tr>
+                            <td>{{ usuario.nombre }}</td>
+                            <td>{{ usuario.apellido }}</td>
+                            <td>{{ usuario.username }}</td>
+                            <td>
+                                {% if usuario.estado == 1 %}
+                                    <p>Activo</p>
+                                {% else %}
+                                    <p>Inactivo</p>
+                                {% endif %}
+                            </td>
+                            <td> 
+                                {% if usuario.sesion == 1 %}
+                                    <p class="text-center  p-1 bg-success text-white ">Online</p>
+                                {% else %}
+                                    <p class="text-center  p-1 bg-danger   text-white">Offline</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'editar_usuario' usuario.id %}" class="btn btn-primary">Editar</a>
+                                {% if usuario.id != request.user.id %}
+                                    <a href="{% url 'borrar_usuarios' usuario.id %}" class="btn btn-danger">Eliminar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

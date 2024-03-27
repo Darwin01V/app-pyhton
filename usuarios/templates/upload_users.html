@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} Crea Usuario {% endblock %} 
+
+{% block content %}     
+    <h1>Subir usuarios desde archivo Excel</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Subir archivo</button>
+    </form>
+    {% for message in messages %}
+        <div>{{ message }}</div>
+    {% endfor %}
+
+{ endblock %}

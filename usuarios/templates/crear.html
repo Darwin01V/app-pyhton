@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %} Crea Usuario {% endblock %} 
+
+{% block content %} 
+    <div>
+        <h1>Registrar usuario</h1>
+    </div>
+    {% if error_message %}
+    <div>
+        <p>{{ error_message }}</p>
+    </div>
+    {% endif %}
+    <form method="post" class="mt-5 mx-5 d-flex gap-3 flex-column ">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label for="nombre" class="col-sm-3 col-form-label">Nombre:</label>
+            <div class="col-sm-9">
+                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingrese su nombre">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="apellido" class="col-sm-3 col-form-label">Apellido:</label>
+            <div class="col-sm-9">
+                <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Ingrese su apellido">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="email" class="col-sm-3 col-form-label">Correo electrónico:</label>
+            <div class="col-sm-9">
+                <input type="email" name="email" class="form-control" id="email" placeholder="Ingrese su correo electrónico">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="identificacion" class="col-sm-3 col-form-label">Identificación:</label>
+            <div class="col-sm-9">
+                <input type="text" name="identificacion" class="form-control" id="identificacion" placeholder="Ingrese su número de identificación">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="rol" class="col-sm-3 col-form-label">Rol:</label>
+            <div class="col-sm-9">
+                <input type="text" name="rol" class="form-control" id="rol" placeholder="Ingrese el rol del usuario">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="fecha_nacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento:</label>
+            <div class="col-sm-9">
+                <input type="date" name="fecha_nacimiento" class="form-control" id="fecha_nacimiento">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="username" class="col-sm-3 col-form-label">Nombre de usuario:</label>
+            <div class="col-sm-9">
+                <input type="text" name="username" class="form-control" id="username" placeholder="Ingrese el nombre de usuario">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="password" class="col-sm-3 col-form-label">Contraseña:</label>
+            <div class="col-sm-9">
+                <input type="password" name="password" class="form-control" id="password" placeholder="Ingrese la contraseña">
+            </div>
+        </div>
+        <br>
+        <div class="form-group d-flex gap-4 ">
+            <div class="col-md">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+
+            <div class="">
+                <a href="{% url 'listar_usuarios' %}" class="btn btn-danger">Cancelar</a>
+            </div>
+        </div>
+    </form>
+    
+    
+
+{% endblock %}
