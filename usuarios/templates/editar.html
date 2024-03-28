@@ -3,15 +3,14 @@
 {% block title %} Editar Usuario {% endblock %} 
 
 {% block content %} 
-    <div>
-        <h1>Registrar usuario</h1>
+    <div class="container ">
+        <h3>Editar usuario</h3>
     </div>
     {% if error_message %}
     <div>
         <p>{{ error_message }}</p>
     </div>
     {% endif %}
-
 
 
     <form method="post" class="mt-5 mx-5 d-flex gap-3 flex-column ">
@@ -58,8 +57,17 @@
                 <input type="password" name="password" class="form-control" id="password" placeholder="Ingrese la contraseña">
             </div>
         </div>
+        <div class="form-group row">
+            <label for="password" class="col-sm-3 col-form-label">Estado:</label>
+            <div class="col-sm-9">
+                <select name="status" id="status" class="form-control">
+                    <option value="1" {% if usuario.status == 1 %}selected{% endif %}>Activo</option>
+                    <option value="0" {% if usuario.status == 0 %}selected{% endif %}>Inactivo</option>
+                </select>
+            </div>
+        </div>
         <br>
-        <div class="form-group d-flex gap-4 ">
+        <div class="form-group d-flex gap-2 justify-content-end ">
             <div class="">
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </div>

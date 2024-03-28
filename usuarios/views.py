@@ -19,6 +19,11 @@ def crear_usuario(request):
             password = request.POST['password']
             rol_nombre = request.POST['rol']
             
+            username_exits = Usuario.objects.get(username = username)
+            
+            if username_exits:
+                raise ValueError('El nombre de usuario ya existe.')
+            
             # Validar el nombre de usuario
             if not (username.isalnum() and any(c.isdigit() for c in username) and any(c.isupper() for c in username) and len(username) >= 8 and len(username) <= 20):
                 raise ValueError('El nombre de usuario no cumple con los requisitos.')
@@ -56,7 +61,7 @@ def crear_usuario(request):
             # Asignar el rol al usuario a través de la tabla intermedia
             rol.usuarios.add(usuario)
             
-            return render(request, 'crear.html', {'mensaje': 'Usuario creado correctamente'})
+            return render(request, 'listar.html', {'mensaje': 'Usuario creado correctamente'})
         
         except Exception as e:
             error_message = str(e)
@@ -68,7 +73,7 @@ def crear_usuario(request):
 @login_required
 def listar_usuarios(request):
     # Obtener todos los usuarios
-    usuarios = Usuario.objects.all()
+    usuarios = Usuario.objects.all().order_by('id')
 
     # Crear una lista para almacenar los datos de usuario extendidos
     usuarios_extendidos = []
@@ -108,16 +113,17 @@ def editar_usuario(request, id):
             usuario.persona.apellido = request.POST['apellido'].lower().capitalize()
             usuario.persona.identificacion = request.POST['identificacion'].lower()
             usuario.persona.fecha_nacimiento = request.POST['fecha_nacimiento']
+            
             usuario.email = request.POST['email']
             usuario.username = request.POST['username']
-            usuario.password = request.POST['password']  # Recuerda cambiar esto por la forma adecuada de actualizar la contraseña
-    
-            # Guardar los cambios en la persona y el usuario
+            password = request.POST['password'] # Recuerda cambiar esto por la forma adecuada de actualizar la contraseña
+            usuario.set_password(password)
+            usuario.status = request.POST['status']
+            
             usuario.persona.save()
             usuario.save()
 
-            # Redirigir a la página de detalles del usuario
-            return redirect('detalles_usuario', id=usuario.id)
+            return redirect('listar_usuarios')
 
         except Usuario.DoesNotExist:
             # Manejar el caso en que el usuario no existe
@@ -166,7 +172,7 @@ def upload_users(request):
                 messages.success(request, f"{users_created} usuarios creados exitosamente.")
             else:
                 messages.error(request, "Formato de archivo no compatible. Por favor, suba un archivo .xlsx.")
-            return redirect('upload_users')
+            #return redirect('listar_usuarios')
     else:
         form = UserUploadForm()
     return render(request, 'upload_users.html', {'form': form})

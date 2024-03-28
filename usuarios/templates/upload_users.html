@@ -4,13 +4,17 @@
 
 {% block content %}     
     <h1>Subir usuarios desde archivo Excel</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form }}
-        <button type="submit">Subir archivo</button>
-    </form>
+    <div class="card p-3 ">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form }}
+            <br>
+            <button type="submit" class="btn btn-success ">Subir archivo</button>
+        </form>
+    </div>
     {% for message in messages %}
         <div>{{ message }}</div>
+        <a href="{% url 'listar_usuarios' %}">Volver atras</a>
     {% endfor %}
 
-{ endblock %}
+{% endblock %}

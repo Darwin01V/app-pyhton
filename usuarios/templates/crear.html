@@ -4,66 +4,71 @@
 
 {% block content %} 
     <div>
-        <h1>Registrar usuario</h1>
+        <h4>Registrar usuario</h4>
     </div>
     {% if error_message %}
     <div>
         <p>{{ error_message }}</p>
     </div>
     {% endif %}
+    <small>Todos los campos son requeridos</small>
     <form method="post" class="mt-5 mx-5 d-flex gap-3 flex-column ">
         {% csrf_token %}
         <div class="form-group row">
             <label for="nombre" class="col-sm-3 col-form-label">Nombre:</label>
             <div class="col-sm-9">
-                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingrese su nombre">
+                <input type="text" name="nombre" class="form-control" id="nombre" placeholder="Ingrese su nombre" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="apellido" class="col-sm-3 col-form-label">Apellido:</label>
             <div class="col-sm-9">
-                <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Ingrese su apellido">
+                <input type="text" name="apellido" class="form-control" id="apellido" placeholder="Ingrese su apellido" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="email" class="col-sm-3 col-form-label">Correo electrónico:</label>
             <div class="col-sm-9">
-                <input type="email" name="email" class="form-control" id="email" placeholder="Ingrese su correo electrónico">
+                <input type="email" name="email" class="form-control" id="email" placeholder="Ingrese su correo electrónico" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="identificacion" class="col-sm-3 col-form-label">Identificación:</label>
             <div class="col-sm-9">
-                <input type="text" name="identificacion" class="form-control" id="identificacion" placeholder="Ingrese su número de identificación">
+                <input type="text" name="identificacion" class="form-control" id="identificacion" placeholder="Ingrese su número de identificación" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="rol" class="col-sm-3 col-form-label">Rol:</label>
             <div class="col-sm-9">
-                <input type="text" name="rol" class="form-control" id="rol" placeholder="Ingrese el rol del usuario">
+                <select name="rol" id="" class="form-control " required>
+                    <option value="">Seleccione rol</option>
+                    <option value="admin">Administrador</option>
+                    <option value="user">Usuario</option>
+                </select>
             </div>
         </div>
         <div class="form-group row">
             <label for="fecha_nacimiento" class="col-sm-3 col-form-label">Fecha de nacimiento:</label>
             <div class="col-sm-9">
-                <input type="date" name="fecha_nacimiento" class="form-control" id="fecha_nacimiento">
+                <input type="date" name="fecha_nacimiento" class="form-control" id="fecha_nacimiento" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="username" class="col-sm-3 col-form-label">Nombre de usuario:</label>
             <div class="col-sm-9">
-                <input type="text" name="username" class="form-control" id="username" placeholder="Ingrese el nombre de usuario">
+                <input type="text" name="username" class="form-control" id="username" placeholder="Ingrese el nombre de usuario" required>
             </div>
         </div>
         <div class="form-group row">
             <label for="password" class="col-sm-3 col-form-label">Contraseña:</label>
             <div class="col-sm-9">
-                <input type="password" name="password" class="form-control" id="password" placeholder="Ingrese la contraseña">
+                <input type="password" name="password" class="form-control" id="password" placeholder="Ingrese la contraseña" required>
             </div>
         </div>
         <br>
-        <div class="form-group d-flex gap-4 ">
-            <div class="col-md">
+        <div class="d-flex gap-4 justify-content-end ">
+            <div class="">
                 <button type="submit" class="btn btn-primary">Guardar</button>
             </div>
 

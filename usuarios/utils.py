@@ -7,24 +7,17 @@ def process_excel_file(uploaded_file):
     wb = load_workbook(uploaded_file)
     ws = wb.active
     for row in ws.iter_rows(min_row=2, values_only=True):
+        # Verificar si la fila contiene datos válidos
+        if not all(row):
+            break  # Salir del bucle si la fila está vacía o no contiene datos válidos
+
         nombre, apellido, identificacion, fecha_nacimiento, correo, username, password, rol_nombre = row
-        # Validar el nombre de usuario
-        if not (username.isalnum() and any(c.isdigit() for c in username) and any(c.isupper() for c in username) and len(username) >= 8 and len(username) <= 20):
-            raise ValueError('El nombre de usuario no cumple con los requisitos.')
-        
-        # Validar la contraseña
-        if not (len(password) >= 8 and any(c.isupper() for c in password) and any(c.isdigit() for c in password) and not any(c.isspace() for c in password)):
-            raise ValueError('La contraseña no cumple con los requisitos.')
-        
-        # Validar la identificación
-        if not (len(identificacion) == 10 and identificacion.isdigit() and not any(identificacion[i] == identificacion[i+1] == identificacion[i+2] == identificacion[i+3] for i in range(len(identificacion)-3))):
-            raise ValueError('La identificación no cumple con los requisitos.')
-        
+
         # Crear la persona
         persona = Persona.objects.create(
-            nombre=nombre.lower().capitalize(),
-            apellido=apellido.lower().capitalize(),
-            identificacion=identificacion.lower(),
+            nombre=nombre,
+            apellido=apellido,
+            identificacion=identificacion,
             fecha_nacimiento=fecha_nacimiento
         )
         
@@ -36,13 +29,8 @@ def process_excel_file(uploaded_file):
             username=username,
             email=correo,
             password=password,
-            first_name=nombre.lower().capitalize(),
-            last_name=apellido.lower().capitalize()
+            persona=persona,
         )
-        
-        # Asignar la persona al usuario
-        user.persona = persona
-        user.save()
         
         # Asignar el rol al usuario a través de la tabla intermedia
         rol.usuarios.add(user)
