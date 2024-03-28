@@ -19,9 +19,7 @@ def crear_usuario(request):
             password = request.POST['password']
             rol_nombre = request.POST['rol']
             
-            username_exits = Usuario.objects.get(username = username)
-            
-            if username_exits:
+            if Usuario.objects.filter(username=username).exists():
                 raise ValueError('El nombre de usuario ya existe.')
             
             # Validar el nombre de usuario
@@ -61,7 +59,7 @@ def crear_usuario(request):
             # Asignar el rol al usuario a través de la tabla intermedia
             rol.usuarios.add(usuario)
             
-            return render(request, 'listar.html', {'mensaje': 'Usuario creado correctamente'})
+            return redirect('listar_usuarios')
         
         except Exception as e:
             error_message = str(e)
