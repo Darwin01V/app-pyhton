@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <title>Document</title>
+</head>
+<body>
+    <div class="d-flex vh-100 justify-content-center align-items-center">
+        <div class="card p-3 ">
+            <p>Ya tienes iniciada una sesion en otro dispositivo</p>
+            <p class="text-center">¿Deseas cerrar la sesion?</p>
+            <div>
+                <a href="{% url 'cerrar_sesion' %}" class="btn btn-primary">Cerrar Sesion</a>
+                <a href="{% url 'iniciar_sesionr' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

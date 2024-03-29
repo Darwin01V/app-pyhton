@@ -2,7 +2,6 @@ from usuarios.models import Sesiones, Usuario
 import xml.etree.ElementTree as ET
 from django.utils import timezone
 import xmltodict
-import json
 from django.http import JsonResponse
 
 def generar_xml_usuario(request):
@@ -10,9 +9,7 @@ def generar_xml_usuario(request):
     
     try:
         usuario = Usuario.objects.get(id=user_id)
-        
         root = ET.Element('user')
-
         firstname = ET.SubElement(root, 'firstname')
         firstname.text = usuario.persona.nombre
         lastname = ET.SubElement(root, 'lastname')
@@ -33,15 +30,16 @@ def generar_xml_usuario(request):
             
             timein_element = ET.SubElement(sesion_element, 'timein')
             timein = timezone.datetime.strptime(sesion_xml_dict['session']['timein'], '%H:%M:%S')
-            timein_element.text = timein.strftime('%H:%M:%S')  # Formatear la hora según tu preferencia
+            timein_element.text = timein.strftime('%H:%M:%S')  
             
             datein_element = ET.SubElement(sesion_element, 'datein')
-            datein_element.text = timein.strftime('%Y-%m-%d')  # Formatear la fecha según tu preferencia
+            datein = timezone.datetime.strptime(sesion_xml_dict['session']['datein'], '%Y-%m-%d')
+            datein_element.text = datein.strftime('%Y-%m-%d') 
             
             if 'timeout' in sesion_xml_dict['session']:
                 timeout_element = ET.SubElement(sesion_element, 'timeout')
                 timeout = timezone.datetime.strptime(sesion_xml_dict['session']['timeout'], '%H:%M:%S.%f')
-                timeout_element.text = timeout.strftime('%H:%M:%S')  # Formatear la hora según tu preferencia
+                timeout_element.text = timeout.strftime('%H:%M:%S') 
             else:
                 timeout_element = ET.SubElement(sesion_element, 'timeout')
                 timeout_element.text = "Hora de cierre no disponible"
@@ -49,7 +47,7 @@ def generar_xml_usuario(request):
             if 'dateout' in sesion_xml_dict['session']:
                 dateout_element = ET.SubElement(sesion_element, 'dateout')
                 dateout = timezone.datetime.strptime(sesion_xml_dict['session']['dateout'], '%Y-%m-%d')
-                dateout_element.text = dateout.strftime('%Y-%m-%d')  # Formatear la fecha según tu preferencia
+                dateout_element.text = dateout.strftime('%Y-%m-%d')  
             else:
                 dateout_element = ET.SubElement(sesion_element, 'dateout')
                 dateout_element.text = "Fecha de cierre no disponible"
@@ -61,5 +59,4 @@ def generar_xml_usuario(request):
         return xml_dict
 
     except Usuario.DoesNotExist:
-        # Si no se encuentra el usuario, devuelve una respuesta de error
         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import Group, Permission 
-
+from django.utils import timezone
 class Persona(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
@@ -37,6 +37,8 @@ class Sesiones(models.Model):
     rideID = models.AutoField(primary_key=True)
     userID = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     xml = models.TextField()
-
+    date_create = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return f"Sesión de {self.userID}"
+    
+    

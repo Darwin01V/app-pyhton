@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 import xml.etree.ElementTree as ET
 from django.utils import timezone
-from usuarios.models import RegistroSesion, Sesiones , Usuario , Persona
+from usuarios.models import RegistroSesion, Sesiones , Usuario
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
 
 def iniciar_sesion(request):
     if request.method == 'GET':
@@ -12,15 +14,14 @@ def iniciar_sesion(request):
         password = request.POST['password']
 
         user = authenticate(request, username=username, password=password)
+        request.session['user_id'] = user.id
 
         if user is not None:
             if user.session_active:
-                return render(request, 'login.html', {'error_message': 'Ya has iniciado sesión en otro dispositivo.'})
+                return render(request, 'cerrar_session_op.html')
 
             login(request, user)
             
-            request.session['user_id'] = user.id
-
             user.session_active = True
             user.save()
 
@@ -59,18 +60,19 @@ def cerrar_sesion(request):
     else:
             return redirect('iniciar_sesion')
 
-def crear_xml_sesion(usuario,request):
+def crear_xml_sesion(usuario, request):
     root = ET.Element('session')
 
     timein = ET.SubElement(root, 'timein')
-    timein.text = timezone.now().strftime('%H:%M:%S') 
+    timein.text = timezone.localtime(timezone.now()).strftime('%H:%M:%S') 
 
     datein = ET.SubElement(root, 'datein')
-    datein.text = timezone.now().strftime('%Y-%m-%d')
+    datein.text = timezone.localtime(timezone.now()).strftime('%Y-%m-%d')
 
     ip_address = ET.SubElement(root, 'ip_address')
-    ip_add =  obtener_direccion_ip_del_usuario(request)
+    ip_add = obtener_direccion_ip_del_usuario(request)
     ip_address.text = ip_add
+
     xml_string = ET.tostring(root, encoding='utf-8')
     sesion = Sesiones.objects.create(userID_id=usuario.id, xml=xml_string.decode())
     sesion.save()
@@ -79,18 +81,14 @@ def actualizar_xml_cierre(usuario):
     try:
         sesion = Sesiones.objects.filter(userID_id=usuario).latest('rideID')
 
-        # Convertir el XML a un objeto ElementTree
         root = ET.fromstring(sesion.xml)
 
-        # Añadir la etiqueta <timeout> con la hora de cierre
         timeout = ET.SubElement(root, 'timeout')
-        timeout.text = timezone.now().strftime('%H:%M:%S.%f')
+        timeout.text = timezone.localtime(timezone.now()).strftime('%H:%M:%S.%f')
 
-        # Añadir la etiqueta <dateout> con la fecha de cierre
         dateout = ET.SubElement(root, 'dateout')
-        dateout.text = timezone.now().strftime('%Y-%m-%d')
+        dateout.text = timezone.localtime(timezone.now()).strftime('%Y-%m-%d')
 
-        # Convertir el árbol XML actualizado a una cadena y guardarla en el registro de sesión
         sesion.xml = ET.tostring(root, encoding='utf-8').decode()
         sesion.save()
     except Sesiones.DoesNotExist:
