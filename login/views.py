@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+import xml.etree.ElementTree as ET
 from django.utils import timezone
-from usuarios.models import RegistroSesion
-from usuarios.models import Usuario
+from usuarios.models import RegistroSesion, Sesiones , Usuario , Persona
 
 def iniciar_sesion(request):
     if request.method == 'GET':
@@ -11,33 +11,26 @@ def iniciar_sesion(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        # Intenta autenticar al usuario
         user = authenticate(request, username=username, password=password)
 
-        # Verifica si la autenticación fue exitosa
         if user is not None:
-            # Si el usuario ya tiene una sesión activa en otro dispositivo
             if user.session_active:
                 return render(request, 'login.html', {'error_message': 'Ya has iniciado sesión en otro dispositivo.'})
 
-            # Inicia sesión para el usuario autenticado
             login(request, user)
             
-            # Guardar el ID del usuario en la sesión
             request.session['user_id'] = user.id
 
-            # Actualiza el campo session_active a True
             user.session_active = True
             user.save()
 
-            # Registra el inicio de sesión en la tabla RegistroSesion
             RegistroSesion.objects.create(usuario=user, fecha_inicio=timezone.now())
+
+            crear_xml_sesion(user, request)
 
             return redirect('dashboard')
         else:
-            # Si la autenticación falla, muestra un mensaje de error
             return render(request, 'login.html', {'error_message': 'Nombre de usuario o contraseña incorrectos.'})
-        
 
 def cerrar_sesion(request):
     # Verificar si el usuario está autenticado
@@ -51,9 +44,10 @@ def cerrar_sesion(request):
                 usuario = Usuario.objects.get(id=user_id)
                 usuario.session_active = False
                 ultimo_registro = RegistroSesion.objects.filter(usuario_id=user_id).latest('fecha_inicio')
-                # Actualizar la fecha de cierre del último registro obtenido
                 ultimo_registro.fecha_cierre = timezone.now()
                 ultimo_registro.save()
+                
+                actualizar_xml_cierre(usuario)
 
                 usuario.save()
             except RegistroSesion.DoesNotExist:
@@ -64,3 +58,48 @@ def cerrar_sesion(request):
         return redirect('iniciar_sesion')
     else:
             return redirect('iniciar_sesion')
+
+def crear_xml_sesion(usuario,request):
+    root = ET.Element('session')
+
+    timein = ET.SubElement(root, 'timein')
+    timein.text = timezone.now().strftime('%H:%M:%S') 
+
+    datein = ET.SubElement(root, 'datein')
+    datein.text = timezone.now().strftime('%Y-%m-%d')
+
+    ip_address = ET.SubElement(root, 'ip_address')
+    ip_add =  obtener_direccion_ip_del_usuario(request)
+    ip_address.text = ip_add
+    xml_string = ET.tostring(root, encoding='utf-8')
+    sesion = Sesiones.objects.create(userID_id=usuario.id, xml=xml_string.decode())
+    sesion.save()
+
+def actualizar_xml_cierre(usuario):
+    try:
+        sesion = Sesiones.objects.filter(userID_id=usuario).latest('rideID')
+
+        # Convertir el XML a un objeto ElementTree
+        root = ET.fromstring(sesion.xml)
+
+        # Añadir la etiqueta <timeout> con la hora de cierre
+        timeout = ET.SubElement(root, 'timeout')
+        timeout.text = timezone.now().strftime('%H:%M:%S.%f')
+
+        # Añadir la etiqueta <dateout> con la fecha de cierre
+        dateout = ET.SubElement(root, 'dateout')
+        dateout.text = timezone.now().strftime('%Y-%m-%d')
+
+        # Convertir el árbol XML actualizado a una cadena y guardarla en el registro de sesión
+        sesion.xml = ET.tostring(root, encoding='utf-8').decode()
+        sesion.save()
+    except Sesiones.DoesNotExist:
+        pass
+
+def obtener_direccion_ip_del_usuario(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

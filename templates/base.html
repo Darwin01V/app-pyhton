@@ -11,7 +11,12 @@
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-                <nav class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <nav class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100 pt-5 ">
+                    <div class="d-flex w-100 justify-content-center " style="height: 80px;">
+                        <img src="{{ imagen_url }}" alt="Imagen de Usuario" style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <br>
+                    <br>
                     <ul class="nav">
                         <li class="nav-link "><a href="{% url 'dashboard' %}" class="nav-link ">Dashboard</a></li>
                         <li class="nav-link "><a href="{% url 'listar_usuarios' %}" class="nav-link ">Usuarios</a></li>
@@ -25,4 +30,12 @@
         </div>
     </div>
 </body>
+<script>
+fetch('http://127.0.0.1:8000/sesiones/user')
+  .then(response => response.json())
+  .then(jsonData => {
+    console.log("Registro de sessiones:",jsonData);
+  })
+  .catch(error => console.error('Error:', error));
+</script>
 </html>

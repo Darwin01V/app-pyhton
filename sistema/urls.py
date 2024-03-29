@@ -22,4 +22,6 @@ urlpatterns = [
     path('', include('login.urls')),
     path('usuario/', include('usuarios.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('sesiones/', include('sesionxml.urls')),
+    
 ]

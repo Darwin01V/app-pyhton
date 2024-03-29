@@ -42,10 +42,8 @@ def crear_usuario(request):
                 fecha_nacimiento=fecha_nacimiento
             )
             
-            # Crear o obtener el rol
             rol, _ = Rol.objects.get_or_create(nombre=rol_nombre)
             
-            # Crear el usuario
             usuario = Usuario.objects.create_user(
                 username=username,
                 email=correo,
@@ -53,7 +51,6 @@ def crear_usuario(request):
                 persona=persona
             )
             
-            # Guardar el usuario
             usuario.save()
             
             # Asignar el rol al usuario a través de la tabla intermedia

@@ -33,3 +33,10 @@ class Rol(models.Model):
     def __str__(self):
         return self.nombre
 
+class Sesiones(models.Model):
+    rideID = models.AutoField(primary_key=True)
+    userID = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    xml = models.TextField()
+
+    def __str__(self):
+        return f"Sesión de {self.userID}"

@@ -1,6 +1,6 @@
-# utils.py
 from openpyxl import load_workbook
 from .models import Persona, Rol, Usuario
+import requests
 
 def process_excel_file(uploaded_file):
     users_created = 0
@@ -38,3 +38,15 @@ def process_excel_file(uploaded_file):
         users_created += 1
     
     return users_created
+
+
+def obtener_imagen_pokemon(numero_pokemon):
+    base_url = 'https://pokeapi.co/api/v2/pokemon/{}/'.format(numero_pokemon)
+    response = requests.get(base_url)
+    
+    if response.status_code == 200:
+        pokemon_data = response.json()
+        sprite_url = pokemon_data['sprites']['front_default']
+        return sprite_url
+    else:
+        return None
