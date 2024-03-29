@@ -3,8 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 import xml.etree.ElementTree as ET
 from django.utils import timezone
 from usuarios.models import RegistroSesion, Sesiones , Usuario
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
 
 def iniciar_sesion(request):
     if request.method == 'GET':
